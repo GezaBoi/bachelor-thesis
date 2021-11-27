@@ -1,0 +1,9 @@
+requests
+pandas
+numpy
+tqdm
+plotly
+sklearn
+statsmodels
+matplotlib
+nb_black
