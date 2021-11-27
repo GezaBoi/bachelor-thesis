@@ -16,4 +16,4 @@ def load_df_cache(file_path: str) -> Tuple[bool, pd.DataFrame]:
 
 
 def save_df_cache(df: pd.DataFrame, file_path: str) -> None:
-    df.to_pickle(CACHE_PATH + file_path)
+    df.to_pickle(CACHE_PATH + file_path, protocol=4)
