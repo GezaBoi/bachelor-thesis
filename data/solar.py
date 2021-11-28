@@ -54,6 +54,12 @@ def get_solar_data(title: str, data_type: str, cache_file: str) -> pd.DataFrame:
             date.today(), title=title, data_type=data_type
         )
 
+    # Removing ending NaN rows to update them
+    min_complete_index = min(
+        [solar_df[column].last_valid_index() for column in solar_df.columns]
+    )
+    solar_df = solar_df.loc[:min_complete_index]
+
     _, min_date, max_date = get_day_forecast(
         date.today(), title=title, data_type=data_type
     )
