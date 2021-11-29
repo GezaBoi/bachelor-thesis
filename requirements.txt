@@ -7,3 +7,6 @@ sklearn
 statsmodels
 matplotlib
 nb_black
+wetterdienst
+xarray
+xlrd
