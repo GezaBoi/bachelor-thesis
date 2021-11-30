@@ -1,3 +1,4 @@
+import time
 from datetime import datetime, date, timezone
 from typing import List, Union
 
@@ -11,17 +12,31 @@ from data.helper import save_df_cache, load_df_cache
 
 URL = "https://api.brightsky.dev/"
 stations = pd.read_excel("data/cache/ha_messnetz.xls")
-stations = stations.loc[stations.Country == "Germany"]
+stations = stations.loc[(stations.Country == "Germany") & (stations.Betreiber == "DWD")]
 station_ids = ["{:05}".format(id) for id in stations.ID.unique()]
 
 
 def get_info(
     station_id: str, forecast_date: datetime, enforce_historical=True
 ) -> Union[pd.DataFrame, None]:
+    params = {"dwd_station_id": station_id, "date": forecast_date}
     answer = requests.get(
         url=f"{URL}/weather",
-        params={"dwd_station_id": station_id, "date": forecast_date},
+        params=params,
     )
+    if not answer.ok:
+        if answer.status_code == 429:
+            time.sleep(0.1)
+            return get_info(
+                station_id=station_id,
+                forecast_date=forecast_date,
+                enforce_historical=enforce_historical,
+            )
+
+        print(
+            f"\nGot an error {answer.status_code}: {answer.text}\n for request: {params}"
+        )
+        return None
     answer_json = answer.json()
     historical_ids = {
         source["id"]
@@ -47,18 +62,25 @@ def get_station_history(station_ids: str, start: datetime, end: datetime):
         bar_station.set_description(f"Station {station_id}")
         cache_file = f"historical_weather/{station_id}.gzip"
 
-        existing_data_df = load_df_cache(cache_file)
-        dates_to_download = pd.date_range(
-            start=start, end=end, freq="1h", tz=timezone.utc
-        ).difference(existing_data_df.index)
-        dates = pd.date_range(start=start, end=end, freq="1D")
+        success, existing_data_df = load_df_cache(cache_file)
+        if success:
+            data.append(existing_data_df)
+            dates_to_download = pd.date_range(
+                start=start, end=end, freq="1h", tz=timezone.utc
+            ).difference(existing_data_df.index)
+        else:
+            dates_to_download = pd.date_range(
+                start=start, end=end, freq="1h", tz=timezone.utc
+            )
+        dates = {d.date() for d in dates_to_download}
         bar_dates = tqdm(total=len(dates), position=0, desc="Dates Progress")
         for day in dates:
             data.append(get_info(station_id=station_id, forecast_date=day))
             bar_dates.update(1)
 
-        df = pd.concat(data)
-        save_df_cache(df, f"historical_weather/{station_id}.gzip")
+        if len(data) > 1:
+            df = pd.concat(data)
+            save_df_cache(df, f"historical_weather/{station_id}.gzip")
         bar_station.update(1)
 
 
