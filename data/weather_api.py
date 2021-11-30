@@ -1,10 +1,8 @@
 import time
 from datetime import datetime, date, timezone
-from typing import List, Union
+from typing import Union
 
-import xarray as xr
 import requests
-import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
@@ -55,7 +53,7 @@ def get_info(
     return weather_df
 
 
-def get_station_history(station_ids: str, start: datetime, end: datetime):
+def get_station_history(station_ids: str, start: datetime, end: datetime) -> None:
     bar_station = tqdm(total=len(stations), position=1, desc="Station Progress")
     for station_id in station_ids:
         data = []
@@ -84,15 +82,12 @@ def get_station_history(station_ids: str, start: datetime, end: datetime):
         bar_station.update(1)
 
 
-start = datetime(2010, 1, 1)
-end = datetime(2020, 1, 1)
-
-array = xr.DataArray(data=np.random.randn(2, 3, 4), dims=("stations", "values", "time"))
-
-
 if __name__ == "__main__":
     import plotly.graph_objects as go
     import plotly.io as pio
+
+    start = datetime(2010, 1, 1)
+    end = datetime(2020, 1, 1)
 
     pio.renderers.default = "browser"
 

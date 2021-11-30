@@ -41,33 +41,33 @@ def fourier_transform(
 if __name__ == "__main__":
     from data import get_forecast_data, get_extrapolation_data
 
-    # extrapolation_df = get_extrapolation_data()
-    #
-    # extrapolation_df["total"] = extrapolation_df.sum(axis=1)
-    # extrapolation_df = extrapolation_df.resample("1D").sum()
-    # extrapolation_df = extrapolation_df.loc[
-    #     extrapolation_df.index
-    #     >= datetime(year=2012, month=1, day=1, tzinfo=timezone.utc)
-    # ]
-    #
-    # x = extrapolation_df["total"].values
-    # n_predict = 365
-    # extrapolation = fourier_transform(
-    #     x,
-    #     n_predict,
-    # )
-    #
-    # start_date = extrapolation_df.index.min()
-    # end_date = extrapolation_df.index.max() + timedelta(days=n_predict)
-    #
-    # df = pd.DataFrame(
-    #     index=pd.date_range(start=start_date, end=end_date, freq="1D", tz="UTC"),
-    #     data={
-    #         "x": list(x) + [nan for _ in range(n_predict)],
-    #         "extrapolation": extrapolation,
-    #     },
-    # )
-    #
-    # pd.options.plotting.backend = "plotly"
-    # fig = df.plot()
-    # fig.show()
+    extrapolation_df = get_extrapolation_data()
+
+    extrapolation_df["total"] = extrapolation_df.sum(axis=1)
+    extrapolation_df = extrapolation_df.resample("1D").sum()
+    extrapolation_df = extrapolation_df.loc[
+        extrapolation_df.index
+        >= datetime(year=2012, month=1, day=1, tzinfo=timezone.utc)
+    ]
+
+    x = extrapolation_df["total"].values
+    n_predict = 365
+    extrapolation = fourier_transform(
+        x,
+        n_predict,
+    )
+
+    start_date = extrapolation_df.index.min()
+    end_date = extrapolation_df.index.max() + timedelta(days=n_predict)
+
+    df = pd.DataFrame(
+        index=pd.date_range(start=start_date, end=end_date, freq="1D", tz="UTC"),
+        data={
+            "x": list(x) + [nan for _ in range(n_predict)],
+            "extrapolation": extrapolation,
+        },
+    )
+
+    pd.options.plotting.backend = "plotly"
+    fig = df.plot()
+    fig.show()
