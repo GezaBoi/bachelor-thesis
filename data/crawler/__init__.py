@@ -1,4 +1,3 @@
-from .update_forecasts import update_forecasts
 from .api_caller import call_api
 from .main import run_background_worker, worker
 
