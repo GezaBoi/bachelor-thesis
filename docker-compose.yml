@@ -1,0 +1,43 @@
+version: '3.3'
+services:
+  weather-db:
+    image: postgres:latest
+    container_name: weather-db
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: weather
+    volumes:
+      - /home/app/containers/weather-backend/postgres_data:/var/lib/postgresql/data
+    networks:
+      - default
+
+  weather-api:
+    image: wheez/weather-api
+    container_name: weather-api
+    restart: unless-stopped
+    depends_on:
+      - weather-db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.weatherapi-app.entrypoints=http"
+      - "traefik.http.routers.weatherapi-app.rule=Host(`weather.geza.io`)"
+      - "traefik.http.middlewares.weatherapi-app-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.weatherapi-app.middlewares=weatherapi-app-https-redirect"
+      - "traefik.http.routers.weatherapi-app-secure.entrypoints=https"
+      - "traefik.http.routers.weatherapi-app-secure.rule=Host(`weather.geza.io`)"
+      - "traefik.http.routers.weatherapi-app-secure.tls=true"
+      - "traefik.http.routers.weatherapi-app-secure.tls.certresolver=http"
+      - "traefik.http.routers.weatherapi-app-secure.service=weatherapi-app"
+      - "traefik.http.services.weatherapi-app.loadbalancer.server.port=80"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.weatherapi-app-secure.middlewares=weatherapi-dav,secHeaders@file"
+      - "traefik.http.middlewares.weatherapi-dav.replacepathregex.regex=^/.well-known/ca(l|rd)dav"
+      - "traefik.http.middlewares.weatherapi-dav.replacepathregex.replacement=/remote.php/dav/"
+    networks:
+      - proxy
+      - default
+
+networks:
+  proxy:
+    external: true

@@ -1,3 +1,4 @@
+black
 requests
 pandas
 numpy
@@ -8,5 +9,12 @@ statsmodels
 matplotlib
 nb_black
 wetterdienst
-xarray
+loguru
+alembic
+psycopg2-binary
+SQLAlchemy
+pydantic
 xlrd
+python-dotenv
+fastapi
+uvicorn
