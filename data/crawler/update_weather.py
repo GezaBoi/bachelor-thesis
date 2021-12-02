@@ -52,19 +52,28 @@ def update_weather(station_id: str, date: date, last_date: date):
 
 def run(station_ids: List[str], date: date):
     for station_id in station_ids:
-        with context_session() as session:
-            max_date = (
-                session.query(WeatherDataORM.time)
-                .filter(WeatherDataORM.station_id == station_id)
-                .filter(WeatherDataORM.is_historical == True)
-                .order_by(desc(WeatherDataORM.time))
-                .limit(1)
-            ).first()[0]
-            min_date_to_update = max_date if max_date else START_DATE
+        for i in range(10):
+            try:
+                with context_session() as session:
+                    max_date = (
+                        session.query(WeatherDataORM.time)
+                        .filter(WeatherDataORM.station_id == station_id)
+                        .filter(WeatherDataORM.is_historical == True)
+                        .order_by(desc(WeatherDataORM.time))
+                        .limit(1)
+                    ).first()
+                    min_date_to_update = max_date[0] if max_date else START_DATE
 
-        logger.debug(
-            f"Updateing weather of {station_id} from {min_date_to_update} to {date}"
-        )
-        for date in list(pd.date_range(min_date_to_update, date, freq="7d"))[:-1]:
-            last_date = (date + timedelta(days=6)).date()
-            update_weather(station_id=station_id, date=date.date(), last_date=last_date)
+                logger.debug(
+                    f"Updateing weather of {station_id} from {min_date_to_update} to {date}"
+                )
+                for date in list(pd.date_range(min_date_to_update, date, freq="7d"))[
+                    :-1
+                ]:
+                    last_date = (date + timedelta(days=6)).date()
+                    update_weather(
+                        station_id=station_id, date=date.date(), last_date=last_date
+                    )
+            except Exception:
+                logger.exception(f"Exception updating weather data {station_id}")
+                time.sleep(i)

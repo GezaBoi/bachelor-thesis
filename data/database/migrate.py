@@ -3,29 +3,21 @@ from alembic import command
 from data.database import engine
 import os
 import configparser
+from dotenv import load_dotenv
 
-
+load_dotenv()
 config = configparser.ConfigParser()
 config.read("data/database/alembic_template.ini")
-
-
 config.set(
     "alembic",
     "sqlalchemy.url",
-    str(engine.url),
+    f"postgresql+psycopg2://postgres:postgres@{os.environ['WEATHER-DB']}:5432/weather",
 )
 
-if os.environ.get("DEVELOPMENT", False):
-    config.set(
-        "alembic",
-        "sqlalchemy.url",
-        str(engine.url),
-    )
-else:
-    pass
 
-with open("data/database/alembic_python.ini", "w") as configfile:
+with open("data/database/alembic.ini", "w") as configfile:
     config.write(configfile)
+
 
 alembic_cfg = Config("data/database/alembic.ini")
 

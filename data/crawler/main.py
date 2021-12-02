@@ -25,7 +25,7 @@ def on_startup():
 def daily_update():
     today = datetime.utcnow().date()
     station_ids = get_station_ids()
-    update_forecasts(station_ids=station_ids, date=today)
+    update_forecasts.run(station_ids=station_ids, date=today)
     update_weather.run(station_ids=station_ids, date=today)
     update_stations.run()
 

@@ -41,7 +41,12 @@ def update_forecast(station_id: str, date: date):
                             session.add(forecast_orm)
 
 
-def update_forecasts(station_ids: List[str], date: date):
+def run(station_ids: List[str], date: date):
     for station_id in station_ids:
         logger.debug(f"Updateing forecast of {station_id} for {date}")
-        update_forecast(station_id=station_id, date=date)
+        for i in range(10):
+            try:
+                update_forecast(station_id=station_id, date=date)
+            except Exception:
+                logger.exception(f"Exception updating forecast {station_id}")
+                time.sleep(i)

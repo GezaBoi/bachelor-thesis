@@ -16,6 +16,8 @@ services:
     image: wheez/weather-api
     container_name: weather-api
     restart: unless-stopped
+    environment:
+      WEATHER-DB: weather-db
     depends_on:
       - weather-db
     labels:
