@@ -1,7 +1,7 @@
 import pandas as pd
 from tqdm import tqdm
 import requests
-from data.data_models import WeatherStation
+from data.models import WeatherStation
 from data.database import context_session, WeatherStationORM
 from loguru import logger
 

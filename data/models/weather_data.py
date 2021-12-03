@@ -6,7 +6,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Optional
 from pydantic import BaseModel, validator
-from data.data_models import WeatherCondition
+from data.models import WeatherCondition
 
 
 class WeatherData(BaseModel):

@@ -5,7 +5,7 @@ import requests
 import pandas as pd
 from tqdm import tqdm
 from loguru import logger
-from data.data_models import WeatherForecast
+from data.models import WeatherForecast
 from data.database import context_session, WeatherStationORM, WeatherForecastORM
 from data.crawler.api_caller import call_api
 

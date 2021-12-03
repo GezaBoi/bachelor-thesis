@@ -14,7 +14,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Integer
 from sqlalchemy.dialects.postgresql import ENUM
 
-from data.data_models import WeatherCondition
+from data.models import WeatherCondition
 
 
 Base = declarative_base()

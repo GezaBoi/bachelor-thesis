@@ -6,7 +6,7 @@ import pandas as pd
 from sqlalchemy import desc, func
 from tqdm import tqdm
 from loguru import logger
-from data.data_models import WeatherData
+from data.models import WeatherData
 from data.database import context_session, WeatherStationORM, WeatherDataORM, update_row
 from data.crawler import call_api
 
