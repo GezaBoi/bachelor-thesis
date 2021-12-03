@@ -67,12 +67,10 @@ def run(station_ids: List[str], date: date):
                 logger.debug(
                     f"Updateing weather of {station_id} from {min_date_to_update} to {date}"
                 )
-                for date in list(pd.date_range(min_date_to_update, date, freq="7d"))[
-                    :-1
-                ]:
-                    last_date = (date + timedelta(days=6)).date()
+                for d in list(pd.date_range(min_date_to_update, date, freq="7d"))[:-1]:
+                    last_date = (d + timedelta(days=6)).date()
                     update_weather(
-                        station_id=station_id, date=date.date(), last_date=last_date
+                        station_id=station_id, date=d.date(), last_date=last_date
                     )
             except Exception:
                 logger.exception(f"Exception updating weather data {station_id}")
