@@ -72,6 +72,7 @@ def run(station_ids: List[str], date: date):
                     update_weather(
                         station_id=station_id, date=d.date(), last_date=last_date
                     )
+                break
             except Exception:
                 logger.exception(f"Exception updating weather data {station_id}")
                 time.sleep(i)
