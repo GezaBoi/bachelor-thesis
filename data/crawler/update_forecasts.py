@@ -47,6 +47,7 @@ def run(station_ids: List[str], date: date):
         for i in range(10):
             try:
                 update_forecast(station_id=station_id, date=date)
+                break
             except Exception:
                 logger.exception(f"Exception updating forecast {station_id}")
                 time.sleep(i)
