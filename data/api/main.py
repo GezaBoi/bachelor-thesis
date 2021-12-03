@@ -45,8 +45,15 @@ async def stations_by_id(station_id: str) -> WeatherStation:
 
 @app.get("/weather", response_model=List[WeatherData])
 async def weather(
-    start_date: datetime, end_date: datetime, station_ids: List[str] = None
+    start_date: datetime = None,
+    end_date: datetime = None,
+    station_ids: List[str] = None,
 ) -> List[WeatherData]:
+    if not start_date:
+        start_date = datetime.utcnow() - timedelta(days=1)
+    if not end_date:
+        end_date = start_date + timedelta(days=1)
+
     async with async_context_session() as session:
         if station_ids:
             datas = (
@@ -68,9 +75,15 @@ async def weather(
 
 
 @app.get("/forecast", response_model=List[WeatherForecast])
-async def weather(
-    start_date: datetime, end_date: datetime, station_ids: List[str] = None
+async def forecast(
+    start_date: datetime = None,
+    end_date: datetime = None,
+    station_ids: List[str] = None,
 ) -> List[WeatherForecast]:
+    if not start_date:
+        start_date = datetime.utcnow()
+    if not end_date:
+        end_date = start_date + timedelta(days=1)
     async with async_context_session() as session:
         if station_ids:
             datas = (
