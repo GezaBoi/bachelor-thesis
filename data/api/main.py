@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import List
 
 from fastapi import FastAPI
+from loguru import logger
 from starlette.responses import RedirectResponse
 
 from data.models import WeatherStation, WeatherData, WeatherForecast
@@ -23,23 +24,12 @@ async def redirect():
     return response
 
 
-@app.get("/stations/all", response_model=List[WeatherStation])
+@logger.catch
+@app.get("/stations", response_model=List[WeatherStation])
 async def stations() -> List[WeatherStation]:
     async with async_context_session() as session:
         stations = session.query(WeatherStationORM).all()
         answer = [WeatherStation.from_orm(station) for station in stations]
-        return answer
-
-
-@app.get("/stations/{station_id}", response_model=WeatherStation)
-async def stations_by_id(station_id: str) -> WeatherStation:
-    async with async_context_session() as session:
-        station = (
-            session.query(WeatherStationORM)
-            .filter(WeatherStationORM.station_id == station_id)
-            .first()
-        )
-        answer = WeatherStation.from_orm(station)
         return answer
 
 

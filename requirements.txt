@@ -1,6 +1,7 @@
 black
 requests
 pandas
+mypy
 numpy
 tqdm
 plotly
@@ -17,4 +18,5 @@ pydantic
 xlrd
 python-dotenv
 fastapi
+starlette
 uvicorn

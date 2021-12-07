@@ -1,9 +1,8 @@
 from datetime import datetime
 from typing import List
-
 import pandas as pd
 import requests
-from data.get import API_URL
+from settings.api import API_URL
 from tqdm import tqdm
 from data.models import WeatherData
 from fastapi.encoders import jsonable_encoder

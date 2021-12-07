@@ -33,18 +33,14 @@ def daily_update():
 def worker():
     on_startup()
     while True:
-        try:
-            now = datetime.utcnow()
-            next_update = datetime.combine(
-                now.date() + timedelta(days=1), datetime.min.time()
-            ) + timedelta(minutes=15)
-            logger.info(f"Waiting for next update at {next_update} UTC")
-            while datetime.utcnow() < next_update:
-                sleep(5)
-            daily_update()
-        except Exception:
-            logger.exception("Exception in background worker")
+        now = datetime.utcnow()
+        next_update = datetime.combine(
+            now.date() + timedelta(days=1), datetime.min.time()
+        ) + timedelta(minutes=15)
+        logger.info(f"Waiting for next update at {next_update} UTC")
+        while datetime.utcnow() < next_update:
             sleep(5)
+        daily_update()
 
 
 def run_background_worker():

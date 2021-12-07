@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List
 import pandas as pd
 import requests
-from data.get import API_URL
+from settings.api import API_URL
 from tqdm import tqdm
 from data.models import WeatherForecast
 from fastapi.encoders import jsonable_encoder
@@ -42,6 +42,6 @@ def forecast_df(
 
 
 if __name__ == "__main__":
-    start_date = datetime(2020, 1, 1)
-    end_date = datetime(2021, 1, 14)
+    start_date = datetime(2021, 12, 1)
+    end_date = datetime(2021, 12, 14)
     df = forecast_df(start_date, end_date)
