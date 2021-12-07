@@ -1,21 +1,8 @@
 # source: https://towardsdatascience.com/using-scikit-learns-binary-trees-to-efficiently-find-latitude-and-longitude-neighbors-909979bd929b
-import math
-from decimal import Decimal
 from typing import List
-from scipy import spatial
+import numpy as np
+from sklearn.neighbors import BallTree
 from data.models import WeatherStation
-
-
-def cartesian(latitude, longitude, elevation=0):
-    # Convert to radians
-    latitude = latitude * (Decimal(math.pi) / Decimal(180))
-    longitude = longitude * (Decimal(math.pi) / Decimal(180))
-
-    R = 6371  # 6378137.0 + elevation  # relative to centre of the earth
-    X = R * math.cos(latitude) * math.cos(longitude)
-    Y = R * math.cos(latitude) * math.sin(longitude)
-    Z = R * math.sin(latitude)
-    return (X, Y, Z)
 
 
 class NearestNeighbors:
@@ -24,20 +11,27 @@ class NearestNeighbors:
 
         values = []
         for station in self.stations:
-            coords = [station.latitude, station.longitude]
-            cartesion_coords = cartesian(*coords)
-            values.append(cartesion_coords)
+            values.append([float(station.latitude), float(station.longitude)])
+            # cartesion_coords = cartesian(*coords)
+            # values.append(cartesion_coords)
 
-        self.tree = spatial.KDTree(values)
+        self.tree = BallTree(np.deg2rad(values), metric="haversine")
 
     def get(
-        self, lat: float, lon: float, num_of_neighbors: int = 3
+        self,
+        station: WeatherStation,
+        num_of_neighbors: int = 3,
     ) -> List[WeatherStation]:
-        cartesian_coord = cartesian(lat, lon)
-        closest = self.tree.query([cartesian_coord], k=num_of_neighbors + 1)
+        lat = float(station.latitude)
+        lon = float(station.longitude)
+        distances, indices = self.tree.query(
+            np.deg2rad([[lat, lon]]), k=num_of_neighbors + 1
+        )
         return [
-            self.stations[i] for i in closest[1][0, 1:]
-        ]  # skip the first result since this will always be the same station
+            self.stations[i]
+            for i in indices[0]
+            if self.stations[i].station_id != station.station_id
+        ]
 
 
 if __name__ == "__main__":
