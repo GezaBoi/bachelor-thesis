@@ -8,7 +8,7 @@ from fastapi.encoders import jsonable_encoder
 
 
 def _get_stations() -> List[WeatherStation]:
-    answer = requests.get(f"{API_URL}/stations/all")
+    answer = requests.get(f"{API_URL}/stations")
     data = [WeatherStation(**j) for j in answer.json()]
     return data
 
@@ -25,5 +25,4 @@ def stations_df() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    start_date = datetime(2020, 1, 1)
-    end_date = datetime(2021, 1, 14)
+    df = stations_df()

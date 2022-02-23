@@ -3,7 +3,7 @@ from typing import List
 
 from fastapi import FastAPI
 from loguru import logger
-from starlette.responses import RedirectResponse
+from starlette.responses import RedirectResponse, FileResponse
 
 from data.models import WeatherStation, WeatherData, WeatherForecast
 from data.database import async_context_session
@@ -13,6 +13,7 @@ from data.database.models import (
     WeatherDataORM,
 )
 from data.crawler import run_background_worker
+from data.helper import load_csv
 
 app = FastAPI()
 run_background_worker()
@@ -31,6 +32,11 @@ async def stations() -> List[WeatherStation]:
         stations = session.query(WeatherStationORM).all()
         answer = [WeatherStation.from_orm(station) for station in stations]
         return answer
+
+
+@app.get("/weather/csv")
+async def weather_csv():
+    return FileResponse("/cache/weather.csv")
 
 
 @app.get("/weather", response_model=List[WeatherData])
@@ -62,6 +68,11 @@ async def weather(
             )
         answer = [WeatherData.from_orm(d) for d in datas]
         return answer
+
+
+@app.get("/forecast/csv")
+async def forecast_csv():
+    return FileResponse("/cache/forecast.csv")
 
 
 @app.get("/forecast", response_model=List[WeatherForecast])

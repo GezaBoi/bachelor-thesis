@@ -6,6 +6,7 @@ from loguru import logger
 from data.crawler import update_forecasts
 from data.crawler import update_weather
 from data.crawler import update_stations
+from data.crawler import update_csvs
 from threading import Thread
 
 
@@ -20,6 +21,8 @@ def on_startup():
     update_stations.run()
     station_ids = get_station_ids()
     update_weather.run(station_ids=station_ids, date=datetime.utcnow().date())
+    Thread(target=update_csvs.initialize_weather_csv(), daemon=True).start()
+    Thread(target=update_csvs.initialize_forecast_csv(), daemon=True).start()
 
 
 def daily_update():
