@@ -53,6 +53,24 @@ async def weather_pickle():
         raise HTTPException(status_code=404, detail="CSV not found.")
 
 
+@app.get("/weather/cleaned_weather_data.csv")
+async def cleaned_weather_csv():
+    weather_csv_location = "data/cache/weather_clean.csv"
+    if os.path.isfile(weather_csv_location):
+        return FileResponse(weather_csv_location)
+    else:
+        raise HTTPException(status_code=404, detail="CSV not found.")
+
+
+@app.get("/weather/cleaned_weather_data.pickle")
+async def cleaned_weather_pickle():
+    weather_csv_location = "data/cache/weather_clean.pickle"
+    if os.path.isfile(weather_csv_location):
+        return FileResponse(weather_csv_location)
+    else:
+        raise HTTPException(status_code=404, detail="CSV not found.")
+
+
 @app.get("/weather", response_model=List[WeatherData])
 async def weather(
     start_date: datetime = None,

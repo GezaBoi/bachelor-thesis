@@ -1,13 +1,20 @@
 import time
 from datetime import datetime
+
+import data
 from data.get import weather_df, forecast_df
 from loguru import logger
 from data.helper import load_csv
 from data.database import context_session, WeatherDataORM, WeatherForecastORM
 from sqlalchemy import func
+from preprocessing import CleanWeatherData
 
 WEATHER_CSV = "data/cache/weather.csv"
 WEATHER_PICKEL = "data/cache/weather.pickle"
+
+WEATHER_CLEAN_CSV = "data/cache/weather_clean.csv"
+WEATHER_CLEAN_PICKLE = "data/cache/weather_clean.pickle"
+
 FORECAST_CSV = "data/cache/forecast.csv"
 FORECAST_PICKEL = "data/cache/forecast.pickle"
 
@@ -20,9 +27,21 @@ def initialize_weather_csv() -> None:
             start_date = session.query(func.min(WeatherDataORM.time)).first()[0]
         end_date = datetime.utcnow()
         df = weather_df(start_date, end_date)
+        df = df.loc[df.is_historical == True]
+
+        stations = data.get.stations()
+        weather_data = CleanWeatherData(weather_df=df, stations=stations)
+        logger.info("Start cleaning")
+        weather_data.clean()
+        logger.info("Saving files")
+        clean_df = weather_data.clean_weather_df
+        clean_df.to_csv(WEATHER_CLEAN_CSV)
+        clean_df.to_pickle(WEATHER_CLEAN_PICKLE)
+
         df.to_csv(WEATHER_CSV)
         df.to_pickle(WEATHER_PICKEL)
         return
+    logger.info("Weather csv found, initialization skipped.")
 
 
 def update_weather_csv() -> None:
@@ -51,6 +70,7 @@ def initialize_forecast_csv() -> None:
         df.to_csv(FORECAST_CSV)
         df.to_pickle(FORECAST_PICKEL)
         return
+    logger.info("Forecast csv found, initialization skipped.")
 
 
 def update_forecast_csv() -> None:
