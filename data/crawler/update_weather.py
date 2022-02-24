@@ -9,8 +9,13 @@ from loguru import logger
 from data.models import WeatherData
 from data.database import context_session, WeatherStationORM, WeatherDataORM, update_row
 from data.crawler import call_api
+import os
 
-START_DATE = datetime(2010, 1, 1)
+
+if os.environ["DEVELOPMENT"]:
+    START_DATE = date.today() - timedelta(days=7)
+else:
+    START_DATE = datetime(2010, 1, 1)
 
 
 def update_weather(station_id: str, date: date, last_date: date):
