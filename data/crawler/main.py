@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta
 from time import sleep
 from typing import Union, List, Optional
@@ -18,11 +19,13 @@ def get_station_ids() -> List[str]:
 
 @logger.catch
 def on_startup():
+    print(os.getcwd())
+
     update_stations.run()
     station_ids = get_station_ids()
     update_weather.run(station_ids=station_ids, date=datetime.utcnow().date())
-    Thread(target=update_csvs.initialize_weather_csv(), daemon=True).start()
-    Thread(target=update_csvs.initialize_forecast_csv(), daemon=True).start()
+    Thread(target=update_csvs.initialize_weather_csv, daemon=True).start()
+    Thread(target=update_csvs.initialize_forecast_csv, daemon=True).start()
 
 
 def daily_update():

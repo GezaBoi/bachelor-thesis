@@ -1,9 +1,7 @@
 import time
 from datetime import datetime, date, timezone
 from typing import Union, List, Optional
-import requests
 import pandas as pd
-from tqdm import tqdm
 from loguru import logger
 from data.models import WeatherForecast
 from data.database import context_session, WeatherStationORM, WeatherForecastORM

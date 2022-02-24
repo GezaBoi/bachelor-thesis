@@ -1,3 +1,5 @@
 venv
 *.pyc
-/data/cache/
+/data/cache/*
+.git
+.mypy_cache

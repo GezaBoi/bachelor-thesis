@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 engine = create_engine(
-    f"postgresql+psycopg2://postgres:postgres@{os.environ['WEATHER-DB']}:5432/weather"
+    f"postgresql+psycopg2://postgres:postgres@{os.environ['WEATHER_DB']}:5432/weather"
 )
 
 Session = sessionmaker(bind=engine)

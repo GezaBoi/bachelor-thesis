@@ -1,0 +1,28 @@
+# docker compose -f docker-compose.dev.yml up --build
+
+version: '3.3'
+services:
+  weather-db:
+    image: postgres:latest
+    container_name: weather-db
+    ports:
+    - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: weather
+
+  weather-api:
+    build:
+      context: ./
+      dockerfile: ./data/Dockerfile
+    container_name: weather-api
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    environment:
+      WEATHER_DB: weather-db
+      DEVELOPMENT: True
+    depends_on:
+      - weather-db
+

@@ -11,7 +11,7 @@ config.read("data/database/alembic_template.ini")
 config.set(
     "alembic",
     "sqlalchemy.url",
-    f"postgresql+psycopg2://postgres:postgres@{os.environ['WEATHER-DB']}:5432/weather",
+    f"postgresql+psycopg2://postgres:postgres@{os.environ['WEATHER_DB']}:5432/weather",
 )
 
 

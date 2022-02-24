@@ -1,7 +1,8 @@
+import os
 from datetime import datetime, timedelta
 from typing import List
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from loguru import logger
 from starlette.responses import RedirectResponse, FileResponse
 
@@ -34,9 +35,22 @@ async def stations() -> List[WeatherStation]:
         return answer
 
 
-@app.get("/weather/csv")
+@app.get("/weather/weather_data.csv")
 async def weather_csv():
-    return FileResponse("/cache/weather.csv")
+    weather_csv_location = "data/cache/weather.csv"
+    if os.path.isfile(weather_csv_location):
+        return FileResponse(weather_csv_location)
+    else:
+        raise HTTPException(status_code=404, detail="CSV not found.")
+
+
+@app.get("/weather/weather_data.pickle")
+async def weather_csv():
+    weather_csv_location = "data/cache/weather.pickle"
+    if os.path.isfile(weather_csv_location):
+        return FileResponse(weather_csv_location)
+    else:
+        raise HTTPException(status_code=404, detail="CSV not found.")
 
 
 @app.get("/weather", response_model=List[WeatherData])
@@ -70,9 +84,22 @@ async def weather(
         return answer
 
 
-@app.get("/forecast/csv")
+@app.get("/forecast/weather_forecast.csv")
 async def forecast_csv():
-    return FileResponse("/cache/forecast.csv")
+    forecast_csv_location = "data/cache/forecast.csv"
+    if os.path.isfile(forecast_csv_location):
+        return FileResponse(forecast_csv_location)
+    else:
+        raise HTTPException(status_code=404, detail="CSV not found.")
+
+
+@app.get("/forecast/weather_forecast.pickle")
+async def forecast_csv():
+    forecast_csv_location = "data/cache/forecast.pickle"
+    if os.path.isfile(forecast_csv_location):
+        return FileResponse(forecast_csv_location)
+    else:
+        raise HTTPException(status_code=404, detail="CSV not found.")
 
 
 @app.get("/forecast", response_model=List[WeatherForecast])
