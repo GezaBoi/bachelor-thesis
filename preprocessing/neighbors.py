@@ -12,8 +12,6 @@ class NearestNeighbors:
         values = []
         for station in self.stations:
             values.append([float(station.latitude), float(station.longitude)])
-            # cartesion_coords = cartesian(*coords)
-            # values.append(cartesion_coords)
 
         self.tree = BallTree(np.deg2rad(values), metric="haversine")
 
