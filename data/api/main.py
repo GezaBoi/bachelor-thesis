@@ -45,7 +45,7 @@ async def weather_csv():
 
 
 @app.get("/weather/weather_data.pickle")
-async def weather_csv():
+async def weather_pickle():
     weather_csv_location = "data/cache/weather.pickle"
     if os.path.isfile(weather_csv_location):
         return FileResponse(weather_csv_location)
@@ -94,7 +94,7 @@ async def forecast_csv():
 
 
 @app.get("/forecast/weather_forecast.pickle")
-async def forecast_csv():
+async def forecast_pickle():
     forecast_csv_location = "data/cache/forecast.pickle"
     if os.path.isfile(forecast_csv_location):
         return FileResponse(forecast_csv_location)
