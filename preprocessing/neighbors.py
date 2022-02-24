@@ -7,7 +7,7 @@ from data.models import WeatherStation
 
 class NearestNeighbors:
     def __init__(self, stations: List[WeatherStation]):
-        self.stations = stations
+        self.stations: List[WeatherStation] = stations
 
         values = []
         for station in self.stations:
