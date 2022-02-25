@@ -1,22 +1,21 @@
 import time
-from datetime import datetime
+from datetime import datetime, timezone
+
+import pandas as pd
 
 import data
 from data.get import weather_df, forecast_df
 from loguru import logger
-from data.helper import load_csv
+from data.helper import load_csv, load_pickle
 from data.database import context_session, WeatherDataORM, WeatherForecastORM
 from sqlalchemy import func
 from preprocessing import CleanWeatherData
 
 WEATHER_CSV = "data/cache/weather.csv"
-WEATHER_PICKEL = "data/cache/weather.pickle"
 
 WEATHER_CLEAN_CSV = "data/cache/weather_clean.csv"
-WEATHER_CLEAN_PICKLE = "data/cache/weather_clean.pickle"
 
 FORECAST_CSV = "data/cache/forecast.csv"
-FORECAST_PICKEL = "data/cache/forecast.pickle"
 
 
 def initialize_weather_csv() -> None:
@@ -35,11 +34,9 @@ def initialize_weather_csv() -> None:
         weather_data.clean()
         logger.info("Saving files")
         clean_df = weather_data.clean_weather_df
-        clean_df.to_csv(WEATHER_CLEAN_CSV)
-        clean_df.to_pickle(WEATHER_CLEAN_PICKLE)
+        clean_df.to_csv(WEATHER_CLEAN_CSV, index_label="time")
 
-        df.to_csv(WEATHER_CSV)
-        df.to_pickle(WEATHER_PICKEL)
+        df.to_csv(WEATHER_CSV, index_label="time")
         return
     logger.info("Weather csv found, initialization skipped.")
 
@@ -48,6 +45,25 @@ def update_weather_csv() -> None:
     success, df = load_csv(path=WEATHER_CSV)
     if success:
         logger.info("Updating weather csv.")
+        start_date = df.index.max()
+        end_date = datetime.now(tz=timezone.utc)
+        new_df = weather_df(start_date, end_date)
+        new_df = new_df.loc[new_df.is_historical == True]
+        new_df = new_df.loc[new_df.index > start_date]
+        updated_df = pd.concat([df, new_df])
+
+        updated_df.to_csv(WEATHER_CSV)
+
+        success, clean_df = load_csv(path=WEATHER_CLEAN_CSV)
+        if success:
+            stations = data.get.stations()
+            weather_data = CleanWeatherData(weather_df=df, stations=stations)
+            logger.info("Start cleaning")
+            weather_data.clean()
+            logger.info("Saving files")
+            new_clean_df = weather_data.clean_weather_df
+            updated_clean_df = pd.concat([clean_df, new_clean_df])
+            updated_clean_df.to_csv(WEATHER_CLEAN_CSV, index_label="time")
         return
     logger.warning(
         "Weather csv not found! If initializing is not in progess check for error!"
@@ -68,7 +84,6 @@ def initialize_forecast_csv() -> None:
         end_date = datetime.utcnow()
         df = forecast_df(start_date, end_date)
         df.to_csv(FORECAST_CSV)
-        df.to_pickle(FORECAST_PICKEL)
         return
     logger.info("Forecast csv found, initialization skipped.")
 

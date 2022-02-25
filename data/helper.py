@@ -22,6 +22,16 @@ def save_df_cache(df: pd.DataFrame, file_path: str) -> None:
 def load_csv(path: str) -> Tuple[bool, pd.DataFrame]:
     try:
         df = pd.read_csv(path)
+        if "time" in df.columns:
+            df.set_index("time", inplace=True)
+        return True, df
+    except FileNotFoundError:
+        return False, pd.DataFrame()
+
+
+def load_pickle(path: str) -> Tuple[bool, pd.DataFrame]:
+    try:
+        df = pd.read_csv(path)
         return True, df
     except FileNotFoundError:
         return False, pd.DataFrame()

@@ -14,7 +14,6 @@ from data.database.models import (
     WeatherDataORM,
 )
 from data.crawler import run_background_worker
-from data.helper import load_csv
 
 app = FastAPI()
 run_background_worker()
@@ -62,15 +61,6 @@ async def cleaned_weather_csv():
         raise HTTPException(status_code=404, detail="CSV not found.")
 
 
-@app.get("/weather/cleaned_weather_data.pickle")
-async def cleaned_weather_pickle():
-    weather_csv_location = "data/cache/weather_clean.pickle"
-    if os.path.isfile(weather_csv_location):
-        return FileResponse(weather_csv_location)
-    else:
-        raise HTTPException(status_code=404, detail="CSV not found.")
-
-
 @app.get("/weather", response_model=List[WeatherData])
 async def weather(
     start_date: datetime = None,
@@ -105,15 +95,6 @@ async def weather(
 @app.get("/forecast/weather_forecast.csv")
 async def forecast_csv():
     forecast_csv_location = "data/cache/forecast.csv"
-    if os.path.isfile(forecast_csv_location):
-        return FileResponse(forecast_csv_location)
-    else:
-        raise HTTPException(status_code=404, detail="CSV not found.")
-
-
-@app.get("/forecast/weather_forecast.pickle")
-async def forecast_pickle():
-    forecast_csv_location = "data/cache/forecast.pickle"
     if os.path.isfile(forecast_csv_location):
         return FileResponse(forecast_csv_location)
     else:
