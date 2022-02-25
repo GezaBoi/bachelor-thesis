@@ -19,8 +19,6 @@ def get_station_ids() -> List[str]:
 
 @logger.catch
 def on_startup():
-    print(os.getcwd())
-
     update_stations.run()
     station_ids = get_station_ids()
     update_weather.run(station_ids=station_ids, date=datetime.utcnow().date())
