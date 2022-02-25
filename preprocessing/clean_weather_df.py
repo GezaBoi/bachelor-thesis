@@ -8,6 +8,7 @@ from tqdm import tqdm
 from collections import Counter
 from math import isnan
 from sun_position import sun_position
+from loguru import logger
 
 
 class CleanWeatherData:
@@ -103,7 +104,7 @@ class CleanWeatherData:
         missing_before = self.weather_df.isna().sum().sum()
         missing_after = self.clean_weather_df.isna().sum().sum()
         cleaned = missing_before - missing_after
-        print(
+        logger.info(
             f"Cleaned {cleaned / missing_before * 100}% of the {missing_before} missing Values. {missing_after} missing Values remain.\n"
             f"Total Values: {len(self.weather_df)*len(self.weather_df.columns)}"
         )
